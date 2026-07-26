@@ -1,0 +1,40 @@
+# API service. The static frontend (public/) is deployed separately to Vercel,
+# which proxies /api/* here via a rewrite — the session cookie is SameSite=Lax
+# and would not be sent on a genuinely cross-site request.
+#
+# Express still serves public/ here as well; that path is simply unused once
+# Vercel fronts the site.
+services:
+  - type: web
+    name: the-lumina
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # secrets.js refuses to boot on anything under 32 chars.
+      - key: JWT_SECRET
+        generateValue: true
+      # Set in the Render dashboard, not here.
+      - key: MONGO_URL
+        sync: false
+      # Stripe test-mode keys. Without them "Pay Deposit" returns 503, which is
+      # a working state — the rest of the app runs fine.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      # Stripe success/cancel redirects are built from this. Point it at the
+      # Vercel URL once that exists, not at this service.
+      - key: PUBLIC_APP_URL
+        sync: false
+      # Optional pre-provisioned staff accounts (JSON arrays).
+      - key: LUMINA_MANAGEMENT
+        sync: false
+      - key: LUMINA_GUARDHOUSE
+        sync: false
