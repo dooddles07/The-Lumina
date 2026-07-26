@@ -33,8 +33,11 @@ services:
       # Vercel URL once that exists, not at this service.
       - key: PUBLIC_APP_URL
         sync: false
-      # Optional pre-provisioned staff accounts (JSON arrays).
+      # Accounts, as JSON arrays. auth.model.js reads all three from the env —
+      # nothing is baked into source, so login is impossible until these are set.
       - key: LUMINA_MANAGEMENT
         sync: false
       - key: LUMINA_GUARDHOUSE
+        sync: false
+      - key: LUMINA_RESIDENTS
         sync: false
